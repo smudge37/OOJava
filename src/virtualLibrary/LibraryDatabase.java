@@ -12,7 +12,7 @@ public class LibraryDatabase {
             newGenres[i] = newGenres[i].toLowerCase().replaceAll("[^a-z]","");
             if ( -1 == searcher.findInArrayList(genres, newGenres[i], 0) ) {
                 genres.add(newGenres[i]);
-            };
+            }
         }
     }
 

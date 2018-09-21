@@ -13,7 +13,12 @@ public class Searcher {
         return -1;
     }
 
-    public int findInArrayList(ArrayList<?> aList, <?> searchItem, startIndex i ){
-
+    public int findInArrayList(ArrayList aList, Object searchItem, int startIndex ){
+            for (int i = startIndex; i < aList.size(); i++) {
+                if (aList.get(i).equals(searchItem)) {
+                    return i;
+                }
+            }
+        return -1;
     }
 }
