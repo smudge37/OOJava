@@ -1,4 +1,8 @@
 package virtualLibrary;
 
-public class BookManager {
+public interface BookManager {
+    void borrowBook();
+    void renewBook();
+    void returnBook();
+    void notifyBorrower();
 }
