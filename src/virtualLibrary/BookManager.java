@@ -1,8 +1,9 @@
 package virtualLibrary;
 
 public interface BookManager {
-    void borrowBook();
-    void renewBook();
-    void returnBook();
-    void notifyBorrower();
+    void borrowBook(Book book);
+    void renewBook(Book book);
+    void returnBook(Book book);
+    void notifyBorrower(Book book);
+    void reserveBook(Book book);
 }

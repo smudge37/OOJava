@@ -10,11 +10,26 @@ public class Book {
     private int dateReleased;
     private boolean isBorrowed;
 
-    public Object getProperty(String field) {
+    public void setProperty(String property, String value) {
+        property = property.toLowerCase();
         try {
-            return this.getClass().getField(field).get(this);
+            if (property.equals("price")) {
+                this.getClass().getField(property).set(this, Integer.parseInt(value));
+            } else {
+                this.getClass().getField(property).set(this, value);
+            }
+        } catch (NoSuchFieldException e) {
+            System.out.println("No such property.");
+        } catch (IllegalAccessException e) {
+            System.out.println("Problem accessing property.");
+        }
+    }
+
+    public Object getProperty(String property) {
+        try {
+            return this.getClass().getField(property).get(this);
         } catch (NoSuchFieldException e){
-            System.out.println("No such field");
+            System.out.println("No such property.");
             return null;
         } catch (IllegalAccessException e) {
             return null;
