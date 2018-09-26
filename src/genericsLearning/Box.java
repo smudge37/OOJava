@@ -1,9 +1,9 @@
 package genericsLearning;
 
-public class Box {
-    private Object object;
+public class Box <T> {
+    private T object;
 
-    public void set(Object obj){
+    public void set(T obj){
         this.object = obj;
     }
 

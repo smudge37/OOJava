@@ -1,13 +1,13 @@
 package genericsLearning;
 
+
 public class PlayAround {
     public static void main(String[] args) {
-        String o1 = "Hello there.";
-
-        Box o2 = new Box();
-
-        if (!o1.equals(o2)) {
-            System.out.println("It worked!");
-        }
+        Experiment ex = new Experiment();
+        Box<Double> intBox = ex.experiment();
+        double num = Math.random();
+        intBox.set(num);
+        System.out.println(intBox.get());
     }
+
 }
