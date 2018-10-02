@@ -3,7 +3,8 @@ package battleships;
 public class BattleshipsApplication {
     public static void main(String[] args) {
 
-        UserInterface ui = new UserInterface();
+        GridManager gm = new GridManager();
+        UserInterface ui = new UserInterface(gm);
 
         try {
             ui.shipPlacement();
@@ -11,5 +12,7 @@ public class BattleshipsApplication {
             System.out.println("Quitting application.");
             return;
         }
+
+
     }
 }

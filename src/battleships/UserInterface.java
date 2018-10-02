@@ -4,7 +4,11 @@ import java.util.Scanner;
 
 public class UserInterface {
     private Scanner scanner = new Scanner(System.in);
-    private GridManager gm = new GridManager();
+    private GridManager gm;
+
+    public UserInterface(GridManager gridManager) {
+        this.gm = gridManager;
+    }
 
     public void shipPlacement() {
         System.out.println("***** Welcome to Battleships! *****");

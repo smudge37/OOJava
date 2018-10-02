@@ -39,55 +39,55 @@ public class GridManager {
         }
     }
 
-    private boolean playerCellFree(int row, int column) {
-        return playerGridArray[row][column] == ' ';
+    private int shipLength(int shipNumber) {
+        int[] shipLengths = {2, 3, 3, 4, 5};
+        return shipLengths[shipNumber - 1];
     }
 
-    public boolean coordsValid(int shipNumber, int[] coords) {
-        if (coords.length != 4) {
-            return false;
-        } else {
-            int[] shipLength = {0, 2, 3, 3, 4, 5};
-            boolean firstCase = (coords[1] == coords[3] && (coords[0] + shipLength[shipNumber] - 1 == coords[2] ||
-                    coords[2] + shipLength[shipNumber] - 1 == coords[0]) );
-            boolean secondCase = (coords[0] == coords[2] && (coords[1] + shipLength[shipNumber] - 1 == coords[3] ||
-                    coords[3] + shipLength[shipNumber] - 1 == coords[1]) );
-            return firstCase || secondCase;
-        }
-    }
-
-    public void addPlayerShip(int[] coords) {
-        if (coords[0] == coords[2]) {
-            if (coords[1] < coords[3]) {
-                for (int i = coords[1]; i <= coords[3]; i++) {
-                    if (playerCellFree(2 +coords[0], 2 + i)) {
-                        playerGridArray[2 + coords[0]][2 + i] = '=';
-                    } else {
-                        throw new CellCollisionException();
+    public void addPlayerShip(int[] shipCoordinates) {
+        if (shipCoordinates[0] == shipCoordinates[2]) {
+            if (shipCoordinates[1] < shipCoordinates[3]) {
+                if (arePlayerCellsFree(true,2 +shipCoordinates[0],
+                        2 + shipCoordinates[1],2 + shipCoordinates[3])) {
+                    for (int i = shipCoordinates[1]; i <= shipCoordinates[3]; i++) {
+                        this.playerGridArray[2 + shipCoordinates[0]][2 + i] = '=';
                     }
+                } else {
+                    throw new CellCollisionException();
                 }
             } else {
-                for (int i = coords[3]; i <= coords[1]; i++) {
-                    playerGridArray[2 + coords[0]][2 + i] = '=';
+                if (arePlayerCellsFree(true,2 + shipCoordinates[0],
+                        2 + shipCoordinates[3],2+shipCoordinates[1])) {
+                    for (int i = shipCoordinates[3]; i <= shipCoordinates[1]; i++) {
+                        this.playerGridArray[2 + shipCoordinates[0]][2 + i] = '=';
+                    }
+                } else {
+                    throw new CellCollisionException();
                 }
             }
-        } else if (coords[1] == coords[3]) {
-            if (coords[0] < coords[2]) {
-                for (int i = coords[0]; i <= coords[2]; i++) {
-                    playerGridArray[2 + i][2 + coords[1]] = '|';
+        } else if (shipCoordinates[1] == shipCoordinates[3]) {
+            if (shipCoordinates[0] < shipCoordinates[2]) {
+                if (arePlayerCellsFree(false,2 + shipCoordinates[0],
+                        2 + shipCoordinates[1],2 + shipCoordinates[2])) {
+                    for (int i = shipCoordinates[0]; i <= shipCoordinates[2]; i++) {
+                        this.playerGridArray[2 + i][2 + shipCoordinates[1]] = '|';
+                    }
+                } else {
+                    throw new CellCollisionException();
                 }
             } else {
-                for (int i = coords[2]; i <= coords[0]; i++) {
-                    playerGridArray[2 + i][2 + coords[1]] = '|';
+                if (arePlayerCellsFree(false,2 + shipCoordinates[2],
+                        2 + shipCoordinates[1],2 + shipCoordinates[0])) {
+                    for (int i = shipCoordinates[2]; i <= shipCoordinates[0]; i++) {
+                        this.playerGridArray[2 + i][2 + shipCoordinates[1]] = '|';
+                    }
+                } else {
+                    throw new CellCollisionException();
                 }
             }
         } else {
             throw new CoordsInvalidException();
         }
-    }
-
-    public char[][] getGrid() {
-        return this.playerGridArray;
     }
 
     public void printGrid() {
@@ -96,5 +96,155 @@ public class GridManager {
             System.out.println(new String(row));
         }
 
+    }
+
+    // Getters
+    public char[][] getPlayerGridArray() {
+        return this.playerGridArray;
+    }
+
+    public char[][] getComputerGridArray() {
+        return computerGridArray;
+    }
+
+
+    // Check validity
+    public boolean coordsValid(int shipNumber, int[] coords) {
+        int shipLength = this.shipLength(shipNumber);
+        if (coords.length != 4) {
+            return false;
+        } else {
+            boolean firstCase = (coords[1] == coords[3] && (coords[0] + shipLength - 1 == coords[2] ||
+                    coords[2] + shipLength - 1 == coords[0]) );
+            boolean secondCase = (coords[0] == coords[2] && (coords[1] + shipLength - 1 == coords[3] ||
+                    coords[3] + shipLength - 1 == coords[1]) );
+            return firstCase || secondCase;
+        }
+    }
+
+    private boolean arePlayerCellsFree(boolean isHorizontal, int startRow, int startCol, int endCoordinate) {
+        if (isHorizontal) {
+            for (int col = startCol; col <= endCoordinate; col++) {
+                if (this.playerGridArray[startRow][col] == ' ') {
+                    return false;
+                }
+            }
+        } else {
+            for (int row = startRow; row <= endCoordinate; row++) {
+                if (this.playerGridArray[row][startCol] == ' ') {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+    private boolean areComputerCellsFree(boolean isHorizontal, int startRow, int startCol, int endCoordinate) {
+        if (isHorizontal) {
+            for (int col = startCol; col <= endCoordinate; col++) {
+                if (this.computerGridArray[startRow][col] == ' ') {
+                    return false;
+                }
+            }
+        } else {
+            for (int row = startRow; row <= endCoordinate; row++) {
+                if (this.computerGridArray[row][startCol] == ' ') {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+    private boolean isComputerCollision(int[] shipCoordinates) {
+        if (shipCoordinates[0] == shipCoordinates[2]) {
+            if (shipCoordinates[1] < shipCoordinates[3]) {
+                if (!areComputerCellsFree(true,2 + shipCoordinates[0],
+                        2 + shipCoordinates[1],2 + shipCoordinates[3])) {
+                    return true;
+                }
+            } else if (!areComputerCellsFree(true,2 + shipCoordinates[0],
+                    2 + shipCoordinates[3],2 + shipCoordinates[1])) {
+                return true;
+            }
+        } else if (shipCoordinates[1] == shipCoordinates[3]) {
+            if (shipCoordinates[0] < shipCoordinates[2]) {
+                if (!areComputerCellsFree(false,2 + shipCoordinates[0],
+                        2 + shipCoordinates[1],2 + shipCoordinates[2])) {
+                    return true;
+                }
+            } else if (!areComputerCellsFree(false,2 + shipCoordinates[2],
+                    2 + shipCoordinates[1],2 + shipCoordinates[0])) {
+                return true;
+            }
+
+        }
+        return false;
+    }
+
+    // Computer grid generation
+    public void populateComputerGrid() {
+        for (int i = 0; i < 5; i++) {
+            int[] shipCoordinates;
+            do {
+                shipCoordinates = this.generateShip(i + 1);
+            } while (this.isComputerCollision(shipCoordinates));
+            addComputerShip(shipCoordinates);
+        }
+
+    }
+
+    private void addComputerShip(int[] shipCoordinates) {
+        if (shipCoordinates[0] == shipCoordinates[2]) {
+            if (shipCoordinates[1] < shipCoordinates[3]) {
+                for (int i = shipCoordinates[1]; i <= shipCoordinates[3]; i++) {
+                    this.computerGridArray[2 + shipCoordinates[0]][2 + i] = '=';
+                }
+            } else {
+                for (int i = shipCoordinates[3]; i <= shipCoordinates[1]; i++) {
+                    this.computerGridArray[2 + shipCoordinates[0]][2 + i] = '=';
+                }
+            }
+        } else if (shipCoordinates[1] == shipCoordinates[3]) {
+            if (shipCoordinates[0] < shipCoordinates[2]) {
+                for (int i = shipCoordinates[0]; i <= shipCoordinates[2]; i++) {
+                    this.computerGridArray[2 + i][2 + shipCoordinates[1]] = '|';
+                }
+            } else {
+                for (int i = shipCoordinates[2]; i <= shipCoordinates[0]; i++) {
+                    this.computerGridArray[2 + i][2 + shipCoordinates[1]] = '|';
+                }
+            }
+        }
+    }
+
+    private int[] generateShip(int shipNumber) {
+        double rand = Math.random();
+
+        if (rand < 0.5) {
+            return this.generateHorizontalShip(shipNumber);
+        } else {
+            return this.generateVerticalShip(shipNumber);
+        }
+    }
+
+    private int[] generateHorizontalShip(int shipNumber) {
+        int shipLength = this.shipLength(shipNumber);
+        int[] shipPosition = new int[4];
+        shipPosition[0] = 2 + new Double(Math.floor( (10) * Math.random() )).intValue();
+        shipPosition[1] = 2 + new Double(Math.floor( (11 - shipLength) * Math.random() )).intValue();
+        shipPosition[2] = 2 + shipPosition[0];
+        shipPosition[3] = 2 + shipPosition[1] + shipLength - 1;
+        return shipPosition;
+    }
+
+    private int[] generateVerticalShip(int shipNumber) {
+        int shipLength = this.shipLength(shipNumber);
+        int[] shipPosition = new int[4];
+        shipPosition[0] = 2 + new Double(Math.floor( (11 - shipLength) * Math.random() )).intValue();
+        shipPosition[1] = 2 + new Double(Math.floor( (10) * Math.random() )).intValue();
+        shipPosition[2] = 2 + shipPosition[0] + shipLength - 1;
+        shipPosition[3] = 2 + shipPosition[1];
+        return shipPosition;
     }
 }
