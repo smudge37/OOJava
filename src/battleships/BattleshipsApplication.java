@@ -13,6 +13,7 @@ public class BattleshipsApplication {
             return;
         }
 
+        gm.generateComputerGrid();
 
     }
 }

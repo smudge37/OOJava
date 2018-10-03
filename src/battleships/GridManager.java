@@ -1,19 +1,18 @@
 package battleships;
 
 import java.util.Arrays;
-import java.util.logging.Logger;
 
 public class GridManager {
 
-    private Logger logger = Logger.getLogger(GridManager.class.getName());
     private char[][] playerGridArray;
     private char[][] computerGridArray;
 
+    // Initialising grid
     public GridManager() {
-        this.drawGrid();
+        this.drawGrids();
     }
 
-    private void drawGrid() {
+    private void drawGrids() {
         this.playerGridArray = new char[14][14];
         for (int i = 0; i < 14; i++) {
             if (i < 2 || i >= 12) {
@@ -37,6 +36,27 @@ public class GridManager {
             this.playerGridArray[i][0] = Integer.toString(i-2).toCharArray()[0];
             this.playerGridArray[i][13] = Integer.toString(i-2).toCharArray()[0];
         }
+
+        this.computerGridArray = new char[14][];
+        for (int row = 0; row < 14; row++) {
+            this.computerGridArray[row] = Arrays.copyOf(this.playerGridArray[row], 14);
+        }
+    }
+
+    // Printing
+    public void printPlayerGrid() {
+
+        for (char[] row: this.playerGridArray) {
+            System.out.println(new String(row));
+        }
+
+    }
+
+    public void printComputerGrid() {
+
+        for (char[] row: this.computerGridArray) {
+            System.out.println(new String(row));
+        }
     }
 
     private int shipLength(int shipNumber) {
@@ -44,58 +64,32 @@ public class GridManager {
         return shipLengths[shipNumber - 1];
     }
 
-    public void addPlayerShip(int[] shipCoordinates) {
-        if (shipCoordinates[0] == shipCoordinates[2]) {
-            if (shipCoordinates[1] < shipCoordinates[3]) {
-                if (arePlayerCellsFree(true,2 +shipCoordinates[0],
-                        2 + shipCoordinates[1],2 + shipCoordinates[3])) {
-                    for (int i = shipCoordinates[1]; i <= shipCoordinates[3]; i++) {
-                        this.playerGridArray[2 + shipCoordinates[0]][2 + i] = '=';
-                    }
-                } else {
-                    throw new CellCollisionException();
+    // Player ship placement
+    public void addPlayerShip(Ship ship) {
+        int[] coordinates = ship.getCoordinates();
+        if (isNoPlayerCollision(ship)) {
+            if (ship.isHorizontal()) {
+                int gridRow = 2 + coordinates[0];
+                int startCol = 2 + coordinates[1];
+                int endCol = 2 + coordinates[3];
+                this.playerGridArray[gridRow][startCol] = '<';
+                this.playerGridArray[gridRow][endCol] = '>';
+                for (int gridCol = startCol + 1; gridCol < endCol; gridCol++) {
+                    this.playerGridArray[gridRow][gridCol] = '=';
                 }
             } else {
-                if (arePlayerCellsFree(true,2 + shipCoordinates[0],
-                        2 + shipCoordinates[3],2+shipCoordinates[1])) {
-                    for (int i = shipCoordinates[3]; i <= shipCoordinates[1]; i++) {
-                        this.playerGridArray[2 + shipCoordinates[0]][2 + i] = '=';
-                    }
-                } else {
-                    throw new CellCollisionException();
-                }
-            }
-        } else if (shipCoordinates[1] == shipCoordinates[3]) {
-            if (shipCoordinates[0] < shipCoordinates[2]) {
-                if (arePlayerCellsFree(false,2 + shipCoordinates[0],
-                        2 + shipCoordinates[1],2 + shipCoordinates[2])) {
-                    for (int i = shipCoordinates[0]; i <= shipCoordinates[2]; i++) {
-                        this.playerGridArray[2 + i][2 + shipCoordinates[1]] = '|';
-                    }
-                } else {
-                    throw new CellCollisionException();
-                }
-            } else {
-                if (arePlayerCellsFree(false,2 + shipCoordinates[2],
-                        2 + shipCoordinates[1],2 + shipCoordinates[0])) {
-                    for (int i = shipCoordinates[2]; i <= shipCoordinates[0]; i++) {
-                        this.playerGridArray[2 + i][2 + shipCoordinates[1]] = '|';
-                    }
-                } else {
-                    throw new CellCollisionException();
+                int gridCol = 2 + coordinates[1];
+                int startRow = 2 + coordinates[0];
+                int endRow = 2 + coordinates[2];
+                this.playerGridArray[startRow][gridCol] = '^';
+                this.playerGridArray[endRow][gridCol] = 'v';
+                for (int gridRow = startRow + 1; gridRow < endRow; gridRow++) {
+                    this.playerGridArray[gridRow][gridCol] = '|';
                 }
             }
         } else {
-            throw new CoordsInvalidException();
+            throw new CellCollisionException();
         }
-    }
-
-    public void printGrid() {
-
-        for (char[] row: playerGridArray) {
-            System.out.println(new String(row));
-        }
-
     }
 
     // Getters
@@ -122,16 +116,23 @@ public class GridManager {
         }
     }
 
-    private boolean arePlayerCellsFree(boolean isHorizontal, int startRow, int startCol, int endCoordinate) {
-        if (isHorizontal) {
-            for (int col = startCol; col <= endCoordinate; col++) {
-                if (this.playerGridArray[startRow][col] == ' ') {
+    private boolean isNoPlayerCollision(Ship ship) {
+        int[] coordinates = ship.getCoordinates();
+        if (ship.isHorizontal()) {
+            int row = 2 + coordinates[0];
+            for (int col = 2 + coordinates[1]; col <= 2 + coordinates[3]; col++) {
+                if (this.playerGridArray[row][col] != ' ') {
+                    System.out.println("Collison Coordinates: ("
+                            + row + "," + col + ")");
                     return false;
                 }
             }
         } else {
-            for (int row = startRow; row <= endCoordinate; row++) {
-                if (this.playerGridArray[row][startCol] == ' ') {
+            int col = 2 + coordinates[1];
+            for (int row = 2 + coordinates[0]; row <= 2 + coordinates[2]; row++) {
+                if (this.playerGridArray[row][col] != ' ') {
+                    System.out.println("Collison Coordinates: ("
+                            + row + "," + col + ")");
                     return false;
                 }
             }
@@ -139,86 +140,66 @@ public class GridManager {
         return true;
     }
 
-    private boolean areComputerCellsFree(boolean isHorizontal, int startRow, int startCol, int endCoordinate) {
-        if (isHorizontal) {
-            for (int col = startCol; col <= endCoordinate; col++) {
-                if (this.computerGridArray[startRow][col] == ' ') {
+    private boolean isNoComputerCollision(Ship ship) {
+        int[] coordinates = ship.getCoordinates();
+        if (ship.isHorizontal()) {
+            int row = 2 + coordinates[0];
+            for (int col = 2 + coordinates[1]; col <= 2 + coordinates[3]; col++) {
+                if (this.computerGridArray[row][col] != ' ') {
                     return false;
                 }
             }
         } else {
-            for (int row = startRow; row <= endCoordinate; row++) {
-                if (this.computerGridArray[row][startCol] == ' ') {
+            int col = 2 + coordinates[1];
+            for (int row = 2 + coordinates[0]; row <= 2 + coordinates[2]; row++) {
+                if (this.computerGridArray[row][col] != ' ') {
                     return false;
                 }
             }
         }
         return true;
-    }
-
-    private boolean isComputerCollision(int[] shipCoordinates) {
-        if (shipCoordinates[0] == shipCoordinates[2]) {
-            if (shipCoordinates[1] < shipCoordinates[3]) {
-                if (!areComputerCellsFree(true,2 + shipCoordinates[0],
-                        2 + shipCoordinates[1],2 + shipCoordinates[3])) {
-                    return true;
-                }
-            } else if (!areComputerCellsFree(true,2 + shipCoordinates[0],
-                    2 + shipCoordinates[3],2 + shipCoordinates[1])) {
-                return true;
-            }
-        } else if (shipCoordinates[1] == shipCoordinates[3]) {
-            if (shipCoordinates[0] < shipCoordinates[2]) {
-                if (!areComputerCellsFree(false,2 + shipCoordinates[0],
-                        2 + shipCoordinates[1],2 + shipCoordinates[2])) {
-                    return true;
-                }
-            } else if (!areComputerCellsFree(false,2 + shipCoordinates[2],
-                    2 + shipCoordinates[1],2 + shipCoordinates[0])) {
-                return true;
-            }
-
-        }
-        return false;
     }
 
     // Computer grid generation
-    public void populateComputerGrid() {
+    public void generateComputerGrid() {
         for (int i = 0; i < 5; i++) {
-            int[] shipCoordinates;
+            Ship ship;
             do {
-                shipCoordinates = this.generateShip(i + 1);
-            } while (this.isComputerCollision(shipCoordinates));
-            addComputerShip(shipCoordinates);
+                ship = this.generateShip(i + 1);
+            } while (!this.isNoComputerCollision(ship));
+            addComputerShip(ship);
         }
 
     }
 
-    private void addComputerShip(int[] shipCoordinates) {
-        if (shipCoordinates[0] == shipCoordinates[2]) {
-            if (shipCoordinates[1] < shipCoordinates[3]) {
-                for (int i = shipCoordinates[1]; i <= shipCoordinates[3]; i++) {
-                    this.computerGridArray[2 + shipCoordinates[0]][2 + i] = '=';
+    public void addComputerShip(Ship ship) {
+        int[] coordinates = ship.getCoordinates();
+        if (isNoComputerCollision(ship)) {
+            if (ship.isHorizontal()) {
+                int gridRow = 2 + coordinates[0];
+                int startCol = 2 + coordinates[1];
+                int endCol = 2 + coordinates[3];
+                this.computerGridArray[gridRow][startCol] = '<';
+                this.computerGridArray[gridRow][endCol] = '>';
+                for (int gridCol = startCol + 1; gridCol < endCol; gridCol++) {
+                    this.computerGridArray[gridRow][gridCol] = '=';
                 }
             } else {
-                for (int i = shipCoordinates[3]; i <= shipCoordinates[1]; i++) {
-                    this.computerGridArray[2 + shipCoordinates[0]][2 + i] = '=';
+                int gridCol = 2 + coordinates[1];
+                int startRow = 2 + coordinates[0];
+                int endRow = 2 + coordinates[2];
+                this.computerGridArray[startRow][gridCol] = '^';
+                this.computerGridArray[endRow][gridCol] = 'v';
+                for (int gridRow = startRow + 1; gridRow < endRow; gridRow++) {
+                    this.computerGridArray[gridRow][gridCol] = '|';
                 }
             }
-        } else if (shipCoordinates[1] == shipCoordinates[3]) {
-            if (shipCoordinates[0] < shipCoordinates[2]) {
-                for (int i = shipCoordinates[0]; i <= shipCoordinates[2]; i++) {
-                    this.computerGridArray[2 + i][2 + shipCoordinates[1]] = '|';
-                }
-            } else {
-                for (int i = shipCoordinates[2]; i <= shipCoordinates[0]; i++) {
-                    this.computerGridArray[2 + i][2 + shipCoordinates[1]] = '|';
-                }
-            }
+        } else {
+            throw new CellCollisionException();
         }
     }
 
-    private int[] generateShip(int shipNumber) {
+    private Ship generateShip(int shipNumber) {
         double rand = Math.random();
 
         if (rand < 0.5) {
@@ -228,23 +209,23 @@ public class GridManager {
         }
     }
 
-    private int[] generateHorizontalShip(int shipNumber) {
+    private Ship generateHorizontalShip(int shipNumber) {
         int shipLength = this.shipLength(shipNumber);
-        int[] shipPosition = new int[4];
-        shipPosition[0] = 2 + new Double(Math.floor( (10) * Math.random() )).intValue();
-        shipPosition[1] = 2 + new Double(Math.floor( (11 - shipLength) * Math.random() )).intValue();
-        shipPosition[2] = 2 + shipPosition[0];
-        shipPosition[3] = 2 + shipPosition[1] + shipLength - 1;
-        return shipPosition;
+        int[] shipCoordinates = new int[4];
+        shipCoordinates[0] = new Double(Math.floor( (10) * Math.random() )).intValue();
+        shipCoordinates[1] = new Double(Math.floor( (11 - shipLength) * Math.random() )).intValue();
+        shipCoordinates[2] = shipCoordinates[0];
+        shipCoordinates[3] = shipCoordinates[1] + shipLength - 1;
+        return new Ship(shipCoordinates);
     }
 
-    private int[] generateVerticalShip(int shipNumber) {
+    private Ship generateVerticalShip(int shipNumber) {
         int shipLength = this.shipLength(shipNumber);
-        int[] shipPosition = new int[4];
-        shipPosition[0] = 2 + new Double(Math.floor( (11 - shipLength) * Math.random() )).intValue();
-        shipPosition[1] = 2 + new Double(Math.floor( (10) * Math.random() )).intValue();
-        shipPosition[2] = 2 + shipPosition[0] + shipLength - 1;
-        shipPosition[3] = 2 + shipPosition[1];
-        return shipPosition;
+        int[] shipCoordinates = new int[4];
+        shipCoordinates[0] = new Double(Math.floor( (11 - shipLength) * Math.random() )).intValue();
+        shipCoordinates[1] = new Double(Math.floor( (10) * Math.random() )).intValue();
+        shipCoordinates[2] = shipCoordinates[0] + shipLength - 1;
+        shipCoordinates[3] = shipCoordinates[1];
+        return new Ship(shipCoordinates);
     }
 }

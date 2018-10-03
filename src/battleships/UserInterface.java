@@ -14,17 +14,22 @@ public class UserInterface {
         System.out.println("***** Welcome to Battleships! *****");
         System.out.println("At any point you may enter q to quit.");
         System.out.println("You must first place your ships.");
-        this.gm.printGrid();
+        this.gm.printPlayerGrid();
 
         for (int i = 1; i < 6; i++) {
-            int [] coords = listenForCoords(i);
+            int [] coordinates = listenForCoordinates(i);
             try {
-                this.gm.addPlayerShip(coords);
+                this.gm.addPlayerShip(new Ship(coordinates));
             } catch (CellCollisionException e) {
                 System.out.println("This placement collides with another ship. " +
-                        "You must choose a different one.");
+                        "You must choose different coordinates.");
+                i--;
+            } catch (CoordsInvalidException e) {
+                System.out.println("Your coordinates were not valid for this ship. " +
+                        "You must choose different coordinates.");
+                i--;
             }
-            this.gm.printGrid();
+            this.gm.printPlayerGrid();
         }
     }
 
@@ -54,7 +59,7 @@ public class UserInterface {
         System.out.println("Enter the desired row number first, then the column number.");
     }
 
-    private int[] listenForCoords(int shipNumber) {
+    private int[] listenForCoordinates(int shipNumber) {
         this.printShipMessage(shipNumber);
         coordsInstructions();
         String coordPattern = "\\(\\d,\\d\\);\\(\\d,\\d\\)";
