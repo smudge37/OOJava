@@ -4,22 +4,22 @@ import java.util.Scanner;
 
 public class UserInterface {
     private Scanner scanner = new Scanner(System.in);
-    private GridManager gm;
+    private BattleshipsUtil bu;
 
-    public UserInterface(GridManager gridManager) {
-        this.gm = gridManager;
+    public UserInterface(BattleshipsUtil battleshipsUtil) {
+        this.bu = battleshipsUtil;
     }
 
-    public void shipPlacement() {
+    public void shipPlacement(Player player) {
         System.out.println("***** Welcome to Battleships! *****");
         System.out.println("At any point you may enter q to quit.");
         System.out.println("You must first place your ships.");
-        this.gm.printPlayerGrid();
+        this.bu.printPlayerGrid();
 
         for (int i = 1; i < 6; i++) {
             int [] coordinates = listenForCoordinates(i);
             try {
-                this.gm.addPlayerShip(new Ship(coordinates));
+                this.bu.addPlayerShip(new Ship(coordinates));
             } catch (CellCollisionException e) {
                 System.out.println("This placement collides with another ship. " +
                         "You must choose different coordinates.");
@@ -29,7 +29,7 @@ public class UserInterface {
                         "You must choose different coordinates.");
                 i--;
             }
-            this.gm.printPlayerGrid();
+            this.bu.printPlayerGrid();
         }
     }
 
@@ -81,7 +81,7 @@ public class UserInterface {
                 for (int i = 0; i < 4; i++) {
                     coords[i] = Integer.parseInt(coordString.substring(coordPositions[i], coordPositions[i] + 1));
                 }
-                if (this.gm.coordsValid(shipNumber, coords)) {
+                if (this.bu.coordsValid(shipNumber, coords)) {
                     return coords;
                 } else {
                     System.out.println("Your coordinates are not valid for this ship. Try again.");
