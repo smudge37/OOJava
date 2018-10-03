@@ -1,19 +1,24 @@
 package battleships;
 
+import java.util.Random;
+
 public class Combatant {
-    BattleshipsUtil bu;
+    private boolean isCPU;
+    private BattleshipsUtil bu;
+    private RandomGenerator rg;
     private char[][] battlefield;
     private char[][] targetBattlefield;
 
-    public Combatant(BattleshipsUtil bu) {
+    public Combatant(BattleshipsUtil bu, RandomGenerator rg, boolean isCPU) {
         this.bu = bu;
-        this.battlefield = bu.createBattlefield();
+        this.rg = rg;
         this.targetBattlefield = bu.createBattlefield();
-    }
-
-    public Combatant(BattleshipsUtil bu, char[][] battlefield) {
-        this(bu);
-        this.battlefield = battlefield;
+        this.isCPU = isCPU;
+        if (isCPU) {
+            this.battlefield = rg.generateBattlefield();
+        } else {
+            this.battlefield = bu.createBattlefield();
+        }
     }
 
     public void printBattlefield() {
@@ -36,8 +41,10 @@ public class Combatant {
         if (target.length != 2) {
             throw new CoordsInvalidException();
         }
-        if (this.battlefield[target[0]][target[1]] != ' ') {
-            this.battlefield[target[0]][target[1]] = 'x';
+        int gridRow = 2 + target[0];
+        int gridCol = 2 + target[1];
+        if (this.battlefield[gridRow][gridCol] != ' ') {
+            this.battlefield[gridRow][gridCol] = 'x';
             return "hit";
         } else {
             return "miss";
@@ -48,15 +55,21 @@ public class Combatant {
         if (target.length != 2) {
             throw new CoordsInvalidException();
         }
+        int gridRow = 2 + target[0];
+        int gridCol = 2 + target[1];
         if (result.equals("hit")) {
-            this.targetBattlefield[target[0]][target[1]] = 'x';
+            this.targetBattlefield[gridRow][gridCol] = 'x';
         } else {
-            this.targetBattlefield[target[0]][target[1]] = 'o';
+            this.targetBattlefield[gridRow][gridCol] = 'o';
         }
     }
 
     public int[] generateTarget(RandomGenerator rg) {
         return rg.generateTarget(this.targetBattlefield);
+    }
+
+    boolean isCPU() {
+        return this.isCPU;
     }
 
     public boolean isDead() {

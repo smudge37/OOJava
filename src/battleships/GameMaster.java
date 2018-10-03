@@ -3,8 +3,8 @@ package battleships;
 public class GameMaster {
     BattleshipsUtil bu = new BattleshipsUtil();
     private RandomGenerator rg = new RandomGenerator();
-    private Computer computer = new Computer(this.bu, this.rg);
-    private Player player = new Player(this.bu);
+    private Combatant computer = new Combatant(this.bu, this.rg, true);
+    private Combatant player = new Combatant(this.bu, this.rg, false);
     private UserInterface ui = new UserInterface(this.player, this.computer, this.bu);
 
     public void run() {
@@ -28,16 +28,15 @@ public class GameMaster {
         while (!gameOver) {
             fire(this.player, this.computer);
             fire(this.computer, this.player);
-
         }
     }
 
     private void fire(Combatant attacker, Combatant defender) {
         int[] target;
-        if (attacker instanceof Player) {
-            target = ui.selectTarget(attacker);
-        } else {
+        if (attacker.isCPU()) {
             target = attacker.generateTarget(rg);
+        } else {
+            target = ui.selectTarget(attacker);
         }
         String result = defender.receiveFire(target);
         attacker.enterResult(result, target);

@@ -3,12 +3,12 @@ package battleships;
 import java.util.Scanner;
 
 public class UserInterface {
-    private Player player;
-    private Computer computer;
+    private Combatant player;
+    private Combatant computer;
     private BattleshipsUtil bu;
     private Scanner scanner = new Scanner(System.in);
 
-    public UserInterface(Player player, Computer computer,
+    public UserInterface(Combatant player, Combatant computer,
                          BattleshipsUtil battleshipsUtil) {
         this.player = player;
         this.computer = computer;
@@ -16,7 +16,7 @@ public class UserInterface {
     }
 
     // Placement Phase
-    public void shipPlacement(Player currentPlayer) {
+    public void shipPlacement(Combatant currentPlayer) {
         System.out.println("***** Welcome to Battleships! *****");
         System.out.println("At any point you may enter q to quit.");
         System.out.println("You must first place your ships.");

@@ -5,8 +5,11 @@ public class BattleshipsApplication {
 
         GameMaster gameMaster = new GameMaster();
 
-        gameMaster.run();
-
+        try {
+            gameMaster.run();
+        } catch (QuitException e) {
+            System.out.println("Game Closing.");
+        }
     }
 
 }
