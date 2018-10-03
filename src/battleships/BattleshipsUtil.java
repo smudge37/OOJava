@@ -4,21 +4,7 @@ import java.util.Arrays;
 
 public class BattleshipsUtil {
 
-    private char[][] playerGridArray;
-    private char[][] computerGridArray;
-    private char[][] computerMaskedGridArray;
-
-    // Initialising grid
-    public BattleshipsUtil() {
-        this.initialiseGrids();
-    }
-
-    private void initialiseGrids() {
-        this.playerGridArray = createBattlefield();
-        this.computerGridArray = createBattlefield();
-        this.computerMaskedGridArray = createBattlefield();
-    }
-
+    // Creation
     public char[][] createBattlefield() {
         char[][] battlefield = new char[14][14];
         for (int i = 0; i < 14; i++) {
@@ -46,29 +32,7 @@ public class BattleshipsUtil {
         return battlefield;
     }
 
-    // Printing
-    public void printPlayerGrid() {
-
-        for (char[] row: this.playerGridArray) {
-            System.out.println(new String(row));
-        }
-
-    }
-
-    public void printComputerGrid() {
-        for (char[] row: this.computerGridArray) {
-            System.out.println(new String(row));
-        }
-    }
-
-    public void printComputerMaskedGrid() {
-
-        for (char[] row: this.computerMaskedGridArray) {
-            System.out.println(new String(row));
-        }
-    }
-
-    // Utility
+    // Reference
     public int shipLength(int shipNumber) {
         int[] shipLengths = {2, 3, 3, 4, 5};
         return shipLengths[shipNumber - 1];
@@ -102,15 +66,6 @@ public class BattleshipsUtil {
         }
         return battlefield;
     }
-
-    public void addPlayerShip(Ship ship) {
-        this.playerGridArray = addShip(this.playerGridArray, ship);
-    }
-
-    public void addComputerShip(Ship ship) {
-        this. computerGridArray = addShip(this.computerGridArray, ship);
-    }
-
 
     // Check validity
     public boolean coordsValid(int shipNumber, int[] coords) {
@@ -150,12 +105,18 @@ public class BattleshipsUtil {
         return true;
     }
 
-    // Getters
-    public char[][] getPlayerGridArray() {
-        return this.playerGridArray;
+    // CountHits
+
+    public int countHits(char[][] battlefield) {
+        int count = 0;
+        for (char[] row: battlefield) {
+            for (char entry: row) {
+                if (entry == 'x') {
+                    count++;
+                }
+            }
+        }
+        return count;
     }
 
-    public char[][] getComputerGridArray() {
-        return computerGridArray;
-    }
 }

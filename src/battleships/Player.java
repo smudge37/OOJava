@@ -1,17 +1,10 @@
 package battleships;
 
-public class Player {
-    private BattleshipsUtil bu;
+public class Player extends Combatant{
     private char[][] battlefield;
 
     public Player(BattleshipsUtil bu) {
-        this.bu = bu;
-        this.battlefield = bu.createBattlefield();
+        super(bu);
     }
 
-    public void printBattlefield() {
-        for (char[] row: battlefield) {
-            System.out.println(new String(row));
-        }
-    }
 }
