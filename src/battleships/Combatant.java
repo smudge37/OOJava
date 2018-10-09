@@ -1,17 +1,16 @@
 package battleships;
 
+import java.util.Arrays;
 import java.util.Random;
 
 public class Combatant {
     private boolean isCPU;
     private BattleshipsUtil bu;
-    private RandomGenerator rg;
     private char[][] battlefield;
     private char[][] targetBattlefield;
 
     public Combatant(BattleshipsUtil bu, RandomGenerator rg, boolean isCPU) {
         this.bu = bu;
-        this.rg = rg;
         this.targetBattlefield = bu.createBattlefield();
         this.isCPU = isCPU;
         if (isCPU) {
@@ -31,6 +30,34 @@ public class Combatant {
         for (char[] row: targetBattlefield) {
             System.out.println(new String(row));
         }
+    }
+
+    public void printBothBattlefields() {
+        char[][] doubleGrid = this.concatGrids(10);
+        String introString = "Your ship status | Enemy's ship status";
+        System.out.println(introString);
+        for (char[] row: doubleGrid) {
+            System.out.println(new String(row));
+        }
+    }
+
+    private char[][] concatGrids(int separation) {
+        char[][] cctedFields = new char[14][separation + 2*this.battlefield.length];
+        int height = cctedFields.length;
+        int standardWidth = this.battlefield[0].length;
+        for (int row = 0; row < height; row++) {
+            for (int cell = 0; cell < standardWidth; cell++) {
+                cctedFields[row][cell] = this.battlefield[row][cell];
+            }
+            for (int cell = standardWidth; cell < standardWidth + separation; cell++) {
+                cctedFields[row][cell] = ' ';
+            }
+            for (int i = 0; i < standardWidth; i++) {
+                cctedFields[row][standardWidth + separation + i]
+                        = this.targetBattlefield[row][i];
+            }
+        }
+        return cctedFields;
     }
 
     public void addShip(Ship ship) {

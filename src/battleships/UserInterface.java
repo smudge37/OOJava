@@ -3,15 +3,11 @@ package battleships;
 import java.util.Scanner;
 
 public class UserInterface {
-    private Combatant player;
-    private Combatant computer;
     private BattleshipsUtil bu;
     private Scanner scanner = new Scanner(System.in);
 
     public UserInterface(Combatant player, Combatant computer,
                          BattleshipsUtil battleshipsUtil) {
-        this.player = player;
-        this.computer = computer;
         this.bu = battleshipsUtil;
     }
 
@@ -72,7 +68,7 @@ public class UserInterface {
         while (true) {
             String input = this.listenForInput(coordinatePattern);
             if (input.toLowerCase().equals("q")) {
-                throw new QuitException();
+                System.exit(-1);
             }
             int[] coords = this.inputToCoordinates(input);
             if (this.bu.coordsValid(shipNumber, coords)) {
@@ -107,6 +103,10 @@ public class UserInterface {
     }
 
     // Battle Phase
+    void displayBattleStatus(Combatant currentPlayer) {
+        System.out.println("Current Battle Status:");
+        currentPlayer.printBothBattlefields();
+    }
     public int[] selectTarget(Combatant currentPlayer) {
         System.out.println("Intel so far:");
         currentPlayer.printTargetBattlefield();
@@ -114,7 +114,7 @@ public class UserInterface {
 
         String input = this.listenForInput("\\(\\d,\\d\\)");
         if (input.toLowerCase().equals("q")) {
-            throw new QuitException();
+            System.exit(-1);
         }
         int[] targetPosition = {Character.getNumericValue(input.charAt(1)),
                 Character.getNumericValue(input.charAt(3))};

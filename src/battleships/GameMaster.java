@@ -1,11 +1,20 @@
 package battleships;
 
 public class GameMaster {
-    BattleshipsUtil bu = new BattleshipsUtil();
-    private RandomGenerator rg = new RandomGenerator();
-    private Combatant computer = new Combatant(this.bu, this.rg, true);
-    private Combatant player = new Combatant(this.bu, this.rg, false);
-    private UserInterface ui = new UserInterface(this.player, this.computer, this.bu);
+    private BattleshipsUtil bu;
+    private RandomGenerator rg;
+    private Combatant player1;
+    private Combatant player2;
+    private UserInterface ui;
+
+    public GameMaster(boolean player1IsCPU, boolean player2IsCPU) {
+        this.bu = new BattleshipsUtil();
+        this.rg = new RandomGenerator();
+        this.player1 = new Combatant(this.bu, this.rg, player1IsCPU);
+        this.player2 = new Combatant(this.bu, this.rg, player2IsCPU);
+        this.ui = new UserInterface(this.player1, this.player2, this.bu);
+
+    }
 
     public void run() {
         this.placementPhase();
@@ -14,20 +23,18 @@ public class GameMaster {
     }
 
     private void placementPhase() {
-        try {
-            this.ui.shipPlacement(this.player);
-        } catch (QuitException e) {
-            System.out.println("Quitting application.");
-            return;
-        }
+        if (!this.player1.isCPU()) this.ui.shipPlacement(this.player1);
+        if (!this.player2.isCPU()) this.ui.shipPlacement(this.player2);
     }
 
     private void battlePhase() {
-        boolean gameOver = false;
+        boolean combatantDead = false;
 
-        while (!gameOver) {
-            fire(this.player, this.computer);
-            fire(this.computer, this.player);
+        while (!combatantDead) {
+            this.ui.displayBattleStatus(this.player1);
+            fire(this.player1, this.player2);
+            this.ui.displayBattleStatus(this.player2);
+            fire(this.player2, this.player1);
         }
     }
 
