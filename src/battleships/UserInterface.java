@@ -6,20 +6,24 @@ public class UserInterface {
     private BattleshipsUtil bu;
     private Scanner scanner = new Scanner(System.in);
 
-    public UserInterface(Combatant player, Combatant computer,
-                         BattleshipsUtil battleshipsUtil) {
+    public UserInterface(BattleshipsUtil battleshipsUtil) {
         this.bu = battleshipsUtil;
     }
 
     // Placement Phase
-    public void shipPlacement(Combatant currentPlayer) {
+    public void shipPlacement(Combatant currentPlayer, boolean bypassPlacement) {
         System.out.println("***** Welcome to Battleships! *****");
         System.out.println("At any point you may enter q to quit.");
         System.out.println("You must first place your ships.");
         currentPlayer.printBattlefield();
 
         for (int i = 1; i < 6; i++) {
-            int [] coordinates = listenForCoordinates(i);
+            int [] coordinates;
+            if (bypassPlacement) {
+                coordinates = TestPositions.POSITIONS[i-1];
+            } else {
+                coordinates = listenForCoordinates(i);
+            }
             try {
                 currentPlayer.addShip(new Ship(coordinates));
             } catch (CellCollisionException e) {
@@ -63,7 +67,7 @@ public class UserInterface {
     private int[] listenForCoordinates(int shipNumber) {
         this.printShipMessage(shipNumber);
         this.printPlacementInstructions();
-        String coordinatePattern = "\\(\\d,\\d\\);\\(\\d,\\d\\)";
+        String coordinatePattern = "\\d\\d,\\d\\d";
 
         while (true) {
             String input = this.listenForInput(coordinatePattern);
@@ -79,9 +83,9 @@ public class UserInterface {
         }
     }
     private int[] inputToCoordinates(String input) {
-        int[] coordPositions = {1, 3, 7, 9};
-        int[] coordinates = new int[4];
-        for (int i = 0; i < 4; i++) {
+        int[] coordPositions = {0, 1, 3, 4};
+        int[] coordinates = new int[coordPositions.length];
+        for (int i = 0; i < coordPositions.length; i++) {
             coordinates[i] = Character.getNumericValue(input.charAt(coordPositions[i]));
         }
         return coordinates;
@@ -104,20 +108,21 @@ public class UserInterface {
 
     // Battle Phase
     void displayBattleStatus(Combatant currentPlayer) {
-        System.out.println("Current Battle Status:");
-        currentPlayer.printBothBattlefields();
+        if (!currentPlayer.isCPU()) {
+            System.out.println("Current Battle Status:\n");
+            currentPlayer.printBothBattlefields();
+        }
     }
-    public int[] selectTarget(Combatant currentPlayer) {
-        System.out.println("Intel so far:");
-        currentPlayer.printTargetBattlefield();
-        System.out.println("Please select a co-ordinate to fire upon of the form \"(a,b)\".");
 
-        String input = this.listenForInput("\\(\\d,\\d\\)");
+    public int[] selectTarget() {
+        System.out.println("Please select a co-ordinate to fire upon of the form \"ab\".");
+
+        String input = this.listenForInput("\\d\\d");
         if (input.toLowerCase().equals("q")) {
             System.exit(-1);
         }
-        int[] targetPosition = {Character.getNumericValue(input.charAt(1)),
-                Character.getNumericValue(input.charAt(3))};
+        int[] targetPosition = {Character.getNumericValue(input.charAt(0)),
+                Character.getNumericValue(input.charAt(1))};
         return targetPosition;
     }
 }

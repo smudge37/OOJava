@@ -12,19 +12,19 @@ public class GameMaster {
         this.rg = new RandomGenerator();
         this.player1 = new Combatant(this.bu, this.rg, player1IsCPU);
         this.player2 = new Combatant(this.bu, this.rg, player2IsCPU);
-        this.ui = new UserInterface(this.player1, this.player2, this.bu);
+        this.ui = new UserInterface(this.bu);
 
     }
 
-    public void run() {
-        this.placementPhase();
+    public void run(boolean bypassPlacement) {
+        this.placementPhase(bypassPlacement);
         this.battlePhase();
         this.endGamePhase();
     }
 
-    private void placementPhase() {
-        if (!this.player1.isCPU()) this.ui.shipPlacement(this.player1);
-        if (!this.player2.isCPU()) this.ui.shipPlacement(this.player2);
+    private void placementPhase(boolean bypassPlacement) {
+        if (!this.player1.isCPU()) this.ui.shipPlacement(this.player1, bypassPlacement);
+        if (!this.player2.isCPU()) this.ui.shipPlacement(this.player2, bypassPlacement);
     }
 
     private void battlePhase() {
@@ -35,6 +35,8 @@ public class GameMaster {
             fire(this.player1, this.player2);
             this.ui.displayBattleStatus(this.player2);
             fire(this.player2, this.player1);
+
+            combatantDead = this.player1.isDead() || this.player2.isDead();
         }
     }
 
@@ -43,7 +45,7 @@ public class GameMaster {
         if (attacker.isCPU()) {
             target = attacker.generateTarget(rg);
         } else {
-            target = ui.selectTarget(attacker);
+            target = ui.selectTarget();
         }
         String result = defender.receiveFire(target);
         attacker.enterResult(result, target);

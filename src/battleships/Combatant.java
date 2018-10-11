@@ -8,6 +8,7 @@ public class Combatant {
     private BattleshipsUtil bu;
     private char[][] battlefield;
     private char[][] targetBattlefield;
+    private boolean[] shipSunk = {false, false, false, false, false};
 
     public Combatant(BattleshipsUtil bu, RandomGenerator rg, boolean isCPU) {
         this.bu = bu;
@@ -46,9 +47,7 @@ public class Combatant {
         int height = cctedFields.length;
         int standardWidth = this.battlefield[0].length;
         for (int row = 0; row < height; row++) {
-            for (int cell = 0; cell < standardWidth; cell++) {
-                cctedFields[row][cell] = this.battlefield[row][cell];
-            }
+            System.arraycopy(this.battlefield[row], 0, cctedFields[row], 0, standardWidth);
             for (int cell = standardWidth; cell < standardWidth + separation; cell++) {
                 cctedFields[row][cell] = ' ';
             }
@@ -70,10 +69,15 @@ public class Combatant {
         }
         int gridRow = 2 + target[0];
         int gridCol = 2 + target[1];
-        if (this.battlefield[gridRow][gridCol] != ' ') {
+        System.out.println("Fired at position (" + (gridRow - 2) + ","
+                + (gridCol - 2) + ")");
+        char targetChar = this.battlefield[gridRow][gridCol];
+        if (targetChar != ' ' && targetChar != 'o'
+                && targetChar != 'x') {
             this.battlefield[gridRow][gridCol] = 'x';
             return "hit";
         } else {
+            this.battlefield[gridRow][gridCol] = 'o';
             return "miss";
         }
     }
@@ -100,6 +104,11 @@ public class Combatant {
     }
 
     public boolean isDead() {
-        return this.bu.countHits(this.battlefield) == 17;
+        for (boolean isSunk: shipSunk) {
+            if (!isSunk) {
+                return false;
+            }
+        }
+        return true;
     }
 }

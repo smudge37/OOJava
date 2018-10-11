@@ -3,20 +3,24 @@ package battleships;
 public class RandomGenerator {
     private BattleshipsUtil bu = new BattleshipsUtil();
 
-    int[] generateTarget(char[][] targetBattlefield ) {
+    int[] generateTarget(char[][] targetBattlefield) {
         int targetsLeft = 100 - this.bu.countHits(targetBattlefield);
         int[] target = new int[2];
 
         int countdown =  Double.valueOf(Math.floor(targetsLeft * Math.random())).intValue();
-        for (int i = 2; i < 12; i++) {
-            for (int j = 2; j < 12; j++) {
-                if (targetBattlefield[i][j] != 'x') {
+        System.out.println("Countdown starting at " + countdown);
+        for (int i = 0; i <= 9; i++) {
+            for (int j = 0; j <= 9; j++) {
+                if (targetBattlefield[i + 2][j + 2] == ' ') {
                     if (countdown == 0) {
                         target[0] = i;
                         target[1] = j;
+                        return target;
                     } else {
-                        countdown--;
+                        countdown = countdown - 1;
                     }
+                } else {
+                    System.out.println("Skipping position " + i + "|" + j);
                 }
             }
         }
