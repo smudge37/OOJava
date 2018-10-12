@@ -1,4 +1,4 @@
-package virtualLibrary.LibraryExceptions;
+package modelLibrary.LibraryExceptions;
 
 public class DoubleReservationException extends RuntimeException {
     public DoubleReservationException() {

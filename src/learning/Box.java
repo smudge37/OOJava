@@ -1,4 +1,4 @@
-package genericsLearning;
+package learning;
 
 public class Box <T> {
     private T object;

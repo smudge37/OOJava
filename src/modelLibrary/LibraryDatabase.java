@@ -1,7 +1,7 @@
-package virtualLibrary;
+package modelLibrary;
 
 import org.jetbrains.annotations.NotNull;
-import virtualLibrary.LibraryExceptions.DoubleReservationException;
+import modelLibrary.LibraryExceptions.DoubleReservationException;
 
 import java.util.ArrayList;
 import java.util.Date;

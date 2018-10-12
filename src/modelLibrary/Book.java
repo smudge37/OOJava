@@ -1,7 +1,7 @@
-package virtualLibrary;
+package modelLibrary;
 
 
-import virtualLibrary.LibraryExceptions.DoubleReservationException;
+import modelLibrary.LibraryExceptions.DoubleReservationException;
 
 import java.util.Date;
 

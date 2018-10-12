@@ -1,4 +1,4 @@
-package genericsLearning;
+package learning;
 
 public class Experiment<T> {
     public Box<T> experiment(){

@@ -1,4 +1,4 @@
-package virtualLibrary;
+package modelLibrary;
 
 public interface BookManager {
     void borrowBook(Book book, Member member);

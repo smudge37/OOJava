@@ -2,6 +2,9 @@
 .iml
 .idea/
 
+# Production
+out/
+
 # Compiled class file
 *.class
 
