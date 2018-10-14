@@ -29,18 +29,26 @@ public class GameMaster {
 
     private void battlePhase() {
         boolean combatantDead = false;
+        String result;
 
         while (!combatantDead) {
             this.ui.displayBattleStatus(this.player1);
-            fire(this.player1, this.player2);
+            result = fire(this.player1, this.player2);
+            if (!this.player1.isCPU()) {
+                this.ui.returnResult(result);
+            }
+
             this.ui.displayBattleStatus(this.player2);
-            fire(this.player2, this.player1);
+            result = fire(this.player2, this.player1);
+            if (!this.player2.isCPU()) {
+                this.ui.returnResult(result);
+            }
 
             combatantDead = this.player1.isDead() || this.player2.isDead();
         }
     }
 
-    private void fire(Combatant attacker, Combatant defender) {
+    private String fire(Combatant attacker, Combatant defender) {
         int[] target;
         if (attacker.isCPU()) {
             target = attacker.generateTarget(rg);
@@ -48,7 +56,8 @@ public class GameMaster {
             target = ui.selectTarget();
         }
         String result = defender.receiveFire(target);
-        attacker.enterResult(result, target);
+        attacker.recordAttackResult(result, target);
+        return result;
     }
 
     private void endGamePhase() {

@@ -1,8 +1,5 @@
 package battleships;
 
-import java.util.Arrays;
-import java.util.Random;
-
 public class Combatant {
     private boolean isCPU;
     private BattleshipsUtil bu;
@@ -21,14 +18,29 @@ public class Combatant {
         }
     }
 
+    // Getters
+    boolean isCPU() {
+        return this.isCPU;
+    }
+
+    boolean isDead() {
+        for (boolean isSunk : shipSunk) {
+            if (!isSunk) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    // Printing
     public void printBattlefield() {
-        for (char[] row: battlefield) {
+        for (char[] row : battlefield) {
             System.out.println(new String(row));
         }
     }
 
     public void printTargetBattlefield() {
-        for (char[] row: targetBattlefield) {
+        for (char[] row : targetBattlefield) {
             System.out.println(new String(row));
         }
     }
@@ -37,13 +49,13 @@ public class Combatant {
         char[][] doubleGrid = this.concatGrids(10);
         String introString = "Your ship status | Enemy's ship status";
         System.out.println(introString);
-        for (char[] row: doubleGrid) {
+        for (char[] row : doubleGrid) {
             System.out.println(new String(row));
         }
     }
 
     private char[][] concatGrids(int separation) {
-        char[][] cctedFields = new char[14][separation + 2*this.battlefield.length];
+        char[][] cctedFields = new char[14][separation + 2 * this.battlefield.length];
         int height = cctedFields.length;
         int standardWidth = this.battlefield[0].length;
         for (int row = 0; row < height; row++) {
@@ -59,30 +71,52 @@ public class Combatant {
         return cctedFields;
     }
 
-    public void addShip(Ship ship) {
+    // Placement Phase
+    void addShip(Ship ship) {
         this.battlefield = this.bu.addShip(this.battlefield, ship);
     }
 
-    public String receiveFire(int[] target) {
+    // Battle Phase
+    int[] generateTarget(RandomGenerator rg) {
+        return rg.generateTarget(this.targetBattlefield);
+    }
+
+    String receiveFire(int[] target) {
         if (target.length != 2) {
             throw new CoordsInvalidException();
         }
-        int gridRow = 2 + target[0];
-        int gridCol = 2 + target[1];
-        System.out.println("Fired at position (" + (gridRow - 2) + ","
-                + (gridCol - 2) + ")");
-        char targetChar = this.battlefield[gridRow][gridCol];
-        if (targetChar != ' ' && targetChar != 'o'
-                && targetChar != 'x') {
-            this.battlefield[gridRow][gridCol] = 'x';
-            return "hit";
+        this.declareShot(target);
+        return this.takeDamage(target);
+    }
+
+    private void declareShot(int[] target) {
+        if (target.length < 2) {
+            throw new CoordsInvalidException("Target in Combatant.declareShot has length < 2.");
+        }
+
+        if (this.isCPU) {
+            System.out.println("Computer fired at position ("
+                    + (target[0]) + "," + (target[1]) + ")");
         } else {
-            this.battlefield[gridRow][gridCol] = 'o';
-            return "miss";
+            System.out.println("You fired at position ("
+                    + (target[0]) + "," + (target[1]) + ")");
         }
     }
 
-    public void enterResult(String result, int[] target) {
+    private String takeDamage(int[] target) {
+        int gridRow = 2 + target[0];
+        int gridCol = 2 + target[1];
+        char targetChar = this.battlefield[gridRow][gridCol];
+        if (targetChar == ' ' || targetChar == 'o' || targetChar == 'x') {
+            this.battlefield[gridRow][gridCol] = 'o';
+            return "Miss.";
+        } else {
+            this.battlefield[gridRow][gridCol] = 'x';
+            return "Hit!";
+        }
+    }
+
+    void recordAttackResult(String result, int[] target) {
         if (target.length != 2) {
             throw new CoordsInvalidException();
         }
@@ -93,22 +127,5 @@ public class Combatant {
         } else {
             this.targetBattlefield[gridRow][gridCol] = 'o';
         }
-    }
-
-    public int[] generateTarget(RandomGenerator rg) {
-        return rg.generateTarget(this.targetBattlefield);
-    }
-
-    boolean isCPU() {
-        return this.isCPU;
-    }
-
-    public boolean isDead() {
-        for (boolean isSunk: shipSunk) {
-            if (!isSunk) {
-                return false;
-            }
-        }
-        return true;
     }
 }

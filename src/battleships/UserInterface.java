@@ -6,12 +6,12 @@ public class UserInterface {
     private BattleshipsUtil bu;
     private Scanner scanner = new Scanner(System.in);
 
-    public UserInterface(BattleshipsUtil battleshipsUtil) {
+    UserInterface(BattleshipsUtil battleshipsUtil) {
         this.bu = battleshipsUtil;
     }
 
     // Placement Phase
-    public void shipPlacement(Combatant currentPlayer, boolean bypassPlacement) {
+    void shipPlacement(Combatant currentPlayer, boolean bypassPlacement) {
         System.out.println("***** Welcome to Battleships! *****");
         System.out.println("At any point you may enter q to quit.");
         System.out.println("You must first place your ships.");
@@ -113,8 +113,7 @@ public class UserInterface {
             currentPlayer.printBothBattlefields();
         }
     }
-
-    public int[] selectTarget() {
+    int[] selectTarget() {
         System.out.println("Please select a co-ordinate to fire upon of the form \"ab\".");
 
         String input = this.listenForInput("\\d\\d");
@@ -124,5 +123,8 @@ public class UserInterface {
         int[] targetPosition = {Character.getNumericValue(input.charAt(0)),
                 Character.getNumericValue(input.charAt(1))};
         return targetPosition;
+    }
+    void returnResult(String result) {
+        System.out.println(result);
     }
 }

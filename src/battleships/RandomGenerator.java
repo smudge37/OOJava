@@ -8,7 +8,6 @@ public class RandomGenerator {
         int[] target = new int[2];
 
         int countdown =  Double.valueOf(Math.floor(targetsLeft * Math.random())).intValue();
-        System.out.println("Countdown starting at " + countdown);
         for (int i = 0; i <= 9; i++) {
             for (int j = 0; j <= 9; j++) {
                 if (targetBattlefield[i + 2][j + 2] == ' ') {
@@ -19,8 +18,6 @@ public class RandomGenerator {
                     } else {
                         countdown = countdown - 1;
                     }
-                } else {
-                    System.out.println("Skipping position " + i + "|" + j);
                 }
             }
         }
