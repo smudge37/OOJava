@@ -15,7 +15,7 @@ public class Combatant {
         this.targetBattlefield = bu.createBattlefield();
         this.isCPU = isCPU;
         this.shipArray = new Ship[5];
-        this.bu.createBattlefield();
+        this.battlefield = this.bu.createBattlefield();
     }
 
     // Getters
@@ -74,8 +74,18 @@ public class Combatant {
     // Placement Phase
     void generateRandomBattlefield(RandomGenerator rg) {
         for (int i = 0; i < 5; i++) {
-            this.shipArray[i] = rg.generateShip(i+1);
-            this.addShip(shipArray[i]);
+            Ship newShip;
+            do {
+                newShip = rg.generateShip(i + 1);
+            } while (this.bu.isCollision(this.battlefield, newShip));
+            System.out.println("New ship generated with number " + ( i + 1 ) + " and length " + newShip.getLength());
+            try{
+                this.addShip(newShip);
+            } catch (Exception e) {
+                System.out.println("There was a problem generating the CPU's ships.");
+                this.printBattlefield();
+                System.exit(1);
+            }
         }
     }
 
@@ -84,6 +94,7 @@ public class Combatant {
             if (isNull(this.shipArray[i])) {
                 this.shipArray[i] = ship;
                 this.battlefield = this.bu.addShip(this.battlefield, ship);
+                return;
             }
         }
     }
@@ -119,7 +130,7 @@ public class Combatant {
         int gridRow = 2 + target[0];
         int gridCol = 2 + target[1];
         char targetChar = this.battlefield[gridRow][gridCol];
-        if (targetChar == ' ' || targetChar == 'o' || targetChar == 'x') {
+        if (targetChar == ' ' || targetChar == 'o') {
             this.battlefield[gridRow][gridCol] = 'o';
             return "Miss.";
         } else {

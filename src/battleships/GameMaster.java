@@ -34,6 +34,7 @@ public class GameMaster {
         } else {
             this.ui.shipPlacement(this.player2, bypassPlacement);
         }
+        player2.printBattlefield();
     }
 
     private void battlePhase() {

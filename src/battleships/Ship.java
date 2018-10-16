@@ -5,7 +5,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Arrays;
 
 public class Ship {
-    static int[] SHIP_LENGTHS = {2,3,3,4,5};
+    private static int[] SHIP_LENGTHS = {2,3,3,4,5};
     private boolean isHorizontal;
     private int[] coordinates;
 
@@ -28,21 +28,21 @@ public class Ship {
         return SHIP_LENGTHS[shipNumber - 1];
     }
 
-    int[] coordinatesFilledByShip() {
-        int[] cFilled;
+    int[][] getCellsFilled() {
+        int[][] cFilled;
         if (this.isHorizontal) {
-            int numSpaces = this.coordinates[3] - this.coordinates[1];
-            cFilled = new int [2*(numSpaces)];
-            for (int i = 0; i < numSpaces; i++) {
-                cFilled[2*i] = this.coordinates[0];
-                cFilled[2*i + 1] = this.coordinates[1] + i;
+            int numSpaces = this.coordinates[3] + 1 - this.coordinates[1];
+            cFilled = new int[numSpaces][2];
+            for (int cellNum = 0; cellNum < numSpaces; cellNum++) {
+                cFilled[cellNum][0] = 2 + this.coordinates[0];
+                cFilled[cellNum][1] = 2 + this.coordinates[1] + cellNum;
             }
         } else {
-            int numSpaces = this.coordinates[2] - this.coordinates[0];
-            cFilled = new int [2*(numSpaces)];
-            for (int i = 0; i < numSpaces; i++) {
-                cFilled[2*i] = this.coordinates[1];
-                cFilled[2*i + 1] = this.coordinates[0] + i;
+            int numSpaces = this.coordinates[2] + 1 - this.coordinates[0];
+            cFilled = new int[numSpaces][2];
+            for (int cellNum = 0; cellNum < numSpaces; cellNum++) {
+                cFilled[cellNum][1] = 2 + this.coordinates[1];
+                cFilled[cellNum][0] = 2 + this.coordinates[0] + cellNum;
             }
         }
         return cFilled;
@@ -67,11 +67,19 @@ public class Ship {
         return coordinatesOut;
     }
 
-    public boolean isHorizontal() {
+    boolean isHorizontal() {
         return isHorizontal;
     }
 
-    public int[] getCoordinates() {
+    int[] getCoordinates() {
         return coordinates;
+    }
+
+    int getLength() {
+        if (this.isHorizontal) {
+            return this.coordinates[3] + 1 - this.coordinates[1];
+        } else {
+            return this.coordinates[2] + 1 - this.coordinates[0];
+        }
     }
 }

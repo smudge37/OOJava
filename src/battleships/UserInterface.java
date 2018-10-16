@@ -18,6 +18,9 @@ public class UserInterface {
         currentPlayer.printBattlefield();
 
         for (int i = 1; i < 6; i++) {
+            System.out.println("i = " + i);
+            this.printShipMessage(i);
+            this.printPlacementInstructions();
             int [] coordinates;
             if (bypassPlacement) {
                 coordinates = TestPositions.POSITIONS[i-1];
@@ -31,10 +34,13 @@ public class UserInterface {
                 System.out.println("This placement collides with another ship. " +
                         "You must choose different coordinates.");
                 i--;
+                System.out.println("Changing i to " + i);
             } catch (CoordsInvalidException e) {
                 System.out.println("Your coordinates were not valid for this ship. " +
                         "You must choose different coordinates.");
                 i--;
+                System.out.println("Changing i to " + i);
+
             }
             currentPlayer.printBattlefield();
         }
@@ -60,14 +66,12 @@ public class UserInterface {
         }
     }
     private void printPlacementInstructions() {
-        System.out.println("Please enter the desired start and end points in the form \"(a,b);(c,d)\".");
+        System.out.println("Please enter the desired start and end points in the form \"ab,cd\".");
         System.out.println("where a, b, c, and d are digits between 0 and 9 inclusive.");
         System.out.println("Ships can only be placed horizontally or vertically.");
         System.out.println("Enter the desired row number first, then the column number.");
     }
     private int[] listenForCoordinates(int shipNumber) {
-        this.printShipMessage(shipNumber);
-        this.printPlacementInstructions();
         String coordinatePattern = "\\d\\d,\\d\\d";
 
         while (true) {

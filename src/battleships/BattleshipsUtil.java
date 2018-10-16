@@ -34,29 +34,23 @@ public class BattleshipsUtil {
 
     // Ship Placement
     public char[][] addShip(char[][] battlefield, Ship ship) {
-        int[] coordinates = ship.getCoordinates();
-        if (isNoCollision(battlefield, ship)) {
-            if (ship.isHorizontal()) {
-                int gridRow = 2 + coordinates[0];
-                int startCol = 2 + coordinates[1];
-                int endCol = 2 + coordinates[3];
-                battlefield[gridRow][startCol] = '<';
-                battlefield[gridRow][endCol] = '>';
-                for (int gridCol = startCol + 1; gridCol < endCol; gridCol++) {
-                    battlefield[gridRow][gridCol] = '=';
-                }
-            } else {
-                int gridCol = 2 + coordinates[1];
-                int startRow = 2 + coordinates[0];
-                int endRow = 2 + coordinates[2];
-                battlefield[startRow][gridCol] = '^';
-                battlefield[endRow][gridCol] = 'v';
-                for (int gridRow = startRow + 1; gridRow < endRow; gridRow++) {
-                    battlefield[gridRow][gridCol] = '|';
-                }
+        int[][] cells = ship.getCellsFilled();
+        System.out.println("Writing new ship to Battlefield: " + battlefield);
+        System.out.println("Ship has coordinates: " + Arrays.toString(ship.getCoordinates()));
+        System.out.println("Ship claims to fill: from " + Arrays.toString(cells[0])
+         + " to " + Arrays.toString(cells[cells.length-1]));
+        if (ship.isHorizontal()) {
+            battlefield[cells[0][0]][cells[0][1]] = '<';
+            battlefield[cells[cells.length-1][0]][cells[cells.length-1][1]] = '>';
+            for (int cellNum = 1; cellNum < cells.length - 1; cellNum++) {
+                battlefield[cells[cellNum][0]][cells[cellNum][1]] = '-';
             }
         } else {
-            throw new CellCollisionException();
+            battlefield[cells[0][0]][cells[0][1]] = '^';
+            battlefield[cells[cells.length-1][0]][cells[cells.length-1][1]] = 'v';
+            for (int cellNum = 1; cellNum < cells.length - 1; cellNum++) {
+                battlefield[cells[cellNum][0]][cells[cellNum][1]] = '|';
+            }
         }
         return battlefield;
     }
@@ -75,28 +69,14 @@ public class BattleshipsUtil {
         }
     }
 
-    public boolean isNoCollision(char[][] battlefield, Ship ship) {
-        int[] coordinates = ship.getCoordinates();
-        if (ship.isHorizontal()) {
-            int row = 2 + coordinates[0];
-            for (int col = 2 + coordinates[1]; col <= 2 + coordinates[3]; col++) {
-                if (battlefield[row][col] != ' ') {
-                    System.out.println("Collison Coordinates: ("
-                            + row + "," + col + ")");
-                    return false;
-                }
-            }
-        } else {
-            int col = 2 + coordinates[1];
-            for (int row = 2 + coordinates[0]; row <= 2 + coordinates[2]; row++) {
-                if (battlefield[row][col] != ' ') {
-                    System.out.println("Collison Coordinates: ("
-                            + row + "," + col + ")");
-                    return false;
-                }
+    public boolean isCollision(char[][] battlefield, Ship ship) {
+        int[][] cellsFilled = ship.getCellsFilled();
+        for (int[] cell: cellsFilled) {
+            if (battlefield[cell[0]][cell[1]] != ' ') {
+                return true;
             }
         }
-        return true;
+        return false;
     }
 
     // CountHits
