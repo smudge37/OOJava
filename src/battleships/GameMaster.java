@@ -23,8 +23,17 @@ public class GameMaster {
     }
 
     private void placementPhase(boolean bypassPlacement) {
-        if (!this.player1.isCPU()) this.ui.shipPlacement(this.player1, bypassPlacement);
-        if (!this.player2.isCPU()) this.ui.shipPlacement(this.player2, bypassPlacement);
+        if (this.player1.isCPU()) {
+            this.player1.generateRandomBattlefield(rg);
+        } else {
+            this.ui.shipPlacement(this.player1, bypassPlacement);
+        }
+
+        if (this.player2.isCPU()) {
+            this.player2.generateRandomBattlefield(rg);
+        } else {
+            this.ui.shipPlacement(this.player2, bypassPlacement);
+        }
     }
 
     private void battlePhase() {

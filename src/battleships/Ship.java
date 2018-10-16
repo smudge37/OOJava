@@ -5,10 +5,11 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Arrays;
 
 public class Ship {
+    static int[] SHIP_LENGTHS = {2,3,3,4,5};
     private boolean isHorizontal;
     private int[] coordinates;
 
-    public Ship(@NotNull int[] coordinates) {
+    Ship(@NotNull int[] coordinates) {
         if (coordinates.length != 4) {
             throw new CoordsInvalidException();
         } else {
@@ -21,6 +22,30 @@ public class Ship {
             }
             this.coordinates = this.giveOrderedCoordinates(this.isHorizontal, coordinates);
         }
+    }
+
+    static int shipLength(int shipNumber) {
+        return SHIP_LENGTHS[shipNumber - 1];
+    }
+
+    int[] coordinatesFilledByShip() {
+        int[] cFilled;
+        if (this.isHorizontal) {
+            int numSpaces = this.coordinates[3] - this.coordinates[1];
+            cFilled = new int [2*(numSpaces)];
+            for (int i = 0; i < numSpaces; i++) {
+                cFilled[2*i] = this.coordinates[0];
+                cFilled[2*i + 1] = this.coordinates[1] + i;
+            }
+        } else {
+            int numSpaces = this.coordinates[2] - this.coordinates[0];
+            cFilled = new int [2*(numSpaces)];
+            for (int i = 0; i < numSpaces; i++) {
+                cFilled[2*i] = this.coordinates[1];
+                cFilled[2*i + 1] = this.coordinates[0] + i;
+            }
+        }
+        return cFilled;
     }
 
     private int[] giveOrderedCoordinates(boolean isHorizontal, int[] coordinatesIn) {
@@ -41,7 +66,6 @@ public class Ship {
         }
         return coordinatesOut;
     }
-
 
     public boolean isHorizontal() {
         return isHorizontal;

@@ -24,19 +24,7 @@ public class RandomGenerator {
         return target;
     }
 
-    char[][] generateBattlefield() {
-        char[][] battlefield = this.bu.createBattlefield();
-        for (int i = 0; i < 5; i++) {
-            Ship ship;
-            do {
-                ship = this.generateShip(i + 1);
-            } while (!this.bu.isNoCollision(battlefield, ship));
-            battlefield = this.bu.addShip(battlefield, ship);
-        }
-        return battlefield;
-    }
-
-    private Ship generateShip(int shipNumber) {
+    Ship generateShip(int shipNumber) {
         double rand = Math.random();
 
         if (rand < 0.5) {
@@ -47,7 +35,7 @@ public class RandomGenerator {
     }
 
     private Ship generateHorizontalShip(int shipNumber) {
-        int shipLength = bu.shipLength(shipNumber);
+        int shipLength = Ship.shipLength(shipNumber);
         int[] shipCoordinates = new int[4];
         shipCoordinates[0] = Double.valueOf(Math.floor( (10) * Math.random() )).intValue();
         shipCoordinates[1] = Double.valueOf(Math.floor( (11 - shipLength) * Math.random() )).intValue();
@@ -57,7 +45,7 @@ public class RandomGenerator {
     }
 
     private Ship generateVerticalShip(int shipNumber) {
-        int shipLength = bu.shipLength(shipNumber);
+        int shipLength = Ship.shipLength(shipNumber);
         int[] shipCoordinates = new int[4];
         shipCoordinates[0] = Double.valueOf(Math.floor( (11 - shipLength) * Math.random() )).intValue();
         shipCoordinates[1] = Double.valueOf(Math.floor( (10) * Math.random() )).intValue();

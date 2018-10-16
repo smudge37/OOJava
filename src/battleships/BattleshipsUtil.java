@@ -32,12 +32,6 @@ public class BattleshipsUtil {
         return battlefield;
     }
 
-    // Reference
-    public int shipLength(int shipNumber) {
-        int[] shipLengths = {2, 3, 3, 4, 5};
-        return shipLengths[shipNumber - 1];
-    }
-
     // Ship Placement
     public char[][] addShip(char[][] battlefield, Ship ship) {
         int[] coordinates = ship.getCoordinates();
@@ -69,7 +63,7 @@ public class BattleshipsUtil {
 
     // Check validity
     public boolean coordsValid(int shipNumber, int[] coords) {
-        int shipLength = this.shipLength(shipNumber);
+        int shipLength = Ship.shipLength(shipNumber);
         if (coords.length != 4) {
             return false;
         } else {

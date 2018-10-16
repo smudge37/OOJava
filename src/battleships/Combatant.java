@@ -1,8 +1,11 @@
 package battleships;
 
+import static java.util.Objects.isNull;
+
 public class Combatant {
     private boolean isCPU;
     private BattleshipsUtil bu;
+    private Ship[] shipArray;
     private char[][] battlefield;
     private char[][] targetBattlefield;
     private boolean[] shipSunk = {false, false, false, false, false};
@@ -11,11 +14,8 @@ public class Combatant {
         this.bu = bu;
         this.targetBattlefield = bu.createBattlefield();
         this.isCPU = isCPU;
-        if (isCPU) {
-            this.battlefield = rg.generateBattlefield();
-        } else {
-            this.battlefield = bu.createBattlefield();
-        }
+        this.shipArray = new Ship[5];
+        this.bu.createBattlefield();
     }
 
     // Getters
@@ -72,8 +72,20 @@ public class Combatant {
     }
 
     // Placement Phase
+    void generateRandomBattlefield(RandomGenerator rg) {
+        for (int i = 0; i < 5; i++) {
+            this.shipArray[i] = rg.generateShip(i+1);
+            this.addShip(shipArray[i]);
+        }
+    }
+
     void addShip(Ship ship) {
-        this.battlefield = this.bu.addShip(this.battlefield, ship);
+        for (int i = 0; i < 5; i++) {
+            if (isNull(this.shipArray[i])) {
+                this.shipArray[i] = ship;
+                this.battlefield = this.bu.addShip(this.battlefield, ship);
+            }
+        }
     }
 
     // Battle Phase

@@ -24,6 +24,7 @@ public class UserInterface {
             } else {
                 coordinates = listenForCoordinates(i);
             }
+
             try {
                 currentPlayer.addShip(new Ship(coordinates));
             } catch (CellCollisionException e) {
