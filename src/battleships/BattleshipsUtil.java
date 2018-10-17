@@ -5,7 +5,7 @@ import java.util.Arrays;
 public class BattleshipsUtil {
 
     // Creation
-    public char[][] createBattlefield() {
+    public static char[][] createBattlefield() {
         char[][] battlefield = new char[14][14];
         for (int i = 0; i < 14; i++) {
             if (i < 2 || i >= 12) {
@@ -33,12 +33,12 @@ public class BattleshipsUtil {
     }
 
     // Ship Placement
-    public char[][] addShip(char[][] battlefield, Ship ship) {
+    public static char[][] addShip(char[][] battlefield, Ship ship) {
         int[][] cells = ship.getCellsFilled();
-        System.out.println("Writing new ship to Battlefield: " + battlefield);
-        System.out.println("Ship has coordinates: " + Arrays.toString(ship.getCoordinates()));
-        System.out.println("Ship claims to fill: from " + Arrays.toString(cells[0])
-         + " to " + Arrays.toString(cells[cells.length-1]));
+//        System.out.println("Writing new ship to Battlefield: " + battlefield);
+//        System.out.println("Ship has coordinates: " + Arrays.toString(ship.getCoordinates()));
+//        System.out.println("Ship claims to fill: from " + Arrays.toString(cells[0])
+//         + " to " + Arrays.toString(cells[cells.length-1]));
         if (ship.isHorizontal()) {
             battlefield[cells[0][0]][cells[0][1]] = '<';
             battlefield[cells[cells.length-1][0]][cells[cells.length-1][1]] = '>';
@@ -55,21 +55,7 @@ public class BattleshipsUtil {
         return battlefield;
     }
 
-    // Check validity
-    public boolean coordsValid(int shipNumber, int[] coords) {
-        int shipLength = Ship.shipLength(shipNumber);
-        if (coords.length != 4) {
-            return false;
-        } else {
-            boolean firstCase = (coords[1] == coords[3] && (coords[0] + shipLength - 1 == coords[2] ||
-                    coords[2] + shipLength - 1 == coords[0]) );
-            boolean secondCase = (coords[0] == coords[2] && (coords[1] + shipLength - 1 == coords[3] ||
-                    coords[3] + shipLength - 1 == coords[1]) );
-            return firstCase || secondCase;
-        }
-    }
-
-    public boolean isCollision(char[][] battlefield, Ship ship) {
+    public static boolean isCollision(char[][] battlefield, Ship ship) {
         int[][] cellsFilled = ship.getCellsFilled();
         for (int[] cell: cellsFilled) {
             if (battlefield[cell[0]][cell[1]] != ' ') {
@@ -81,7 +67,7 @@ public class BattleshipsUtil {
 
     // CountHits
 
-    public int countHits(char[][] battlefield) {
+    public static int countHits(char[][] battlefield) {
         int count = 0;
         for (char[] row: battlefield) {
             for (char entry: row) {

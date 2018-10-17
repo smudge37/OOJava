@@ -1,21 +1,24 @@
 package battleships;
 
+import java.util.Optional;
+
 import static java.util.Objects.isNull;
 
 public class Combatant {
     private boolean isCPU;
-    private BattleshipsUtil bu;
+    private String name;
     private Ship[] shipArray;
     private char[][] battlefield;
     private char[][] targetBattlefield;
-    private boolean[] shipSunk = {false, false, false, false, false};
+    private boolean isDead;
 
-    public Combatant(BattleshipsUtil bu, RandomGenerator rg, boolean isCPU) {
-        this.bu = bu;
-        this.targetBattlefield = bu.createBattlefield();
+    public Combatant(String name, boolean isCPU) {
         this.isCPU = isCPU;
+        this.name = name;
         this.shipArray = new Ship[5];
-        this.battlefield = this.bu.createBattlefield();
+        this.battlefield = BattleshipsUtil.createBattlefield();
+        this.targetBattlefield = BattleshipsUtil.createBattlefield();
+        this.isDead = false;
     }
 
     // Getters
@@ -23,13 +26,24 @@ public class Combatant {
         return this.isCPU;
     }
 
+    public String getName() {
+        return name;
+    }
+
     boolean isDead() {
-        for (boolean isSunk : shipSunk) {
-            if (!isSunk) {
-                return false;
+        return this.isDead;
+    }
+
+    // Find ship
+    private Ship findShip(int gridRow, int gridCol) {
+        for (Ship ship: this.shipArray) {
+            for (int[] cell: ship.getCellsFilled()) {
+                if (cell[0] == gridRow && cell[1] == gridCol) {
+                    return ship;
+                }
             }
         }
-        return true;
+        return null;
     }
 
     // Printing
@@ -72,13 +86,12 @@ public class Combatant {
     }
 
     // Placement Phase
-    void generateRandomBattlefield(RandomGenerator rg) {
+    void generateRandomBattlefield() {
         for (int i = 0; i < 5; i++) {
             Ship newShip;
             do {
-                newShip = rg.generateShip(i + 1);
-            } while (this.bu.isCollision(this.battlefield, newShip));
-            System.out.println("New ship generated with number " + ( i + 1 ) + " and length " + newShip.getLength());
+                newShip = RandomGenerator.generateShip(i + 1);
+            } while (BattleshipsUtil.isCollision(this.battlefield, newShip));
             try{
                 this.addShip(newShip);
             } catch (Exception e) {
@@ -93,49 +106,38 @@ public class Combatant {
         for (int i = 0; i < 5; i++) {
             if (isNull(this.shipArray[i])) {
                 this.shipArray[i] = ship;
-                this.battlefield = this.bu.addShip(this.battlefield, ship);
+                this.battlefield = BattleshipsUtil.addShip(this.battlefield, ship);
                 return;
             }
         }
     }
 
     // Battle Phase
-    int[] generateTarget(RandomGenerator rg) {
-        return rg.generateTarget(this.targetBattlefield);
+    int[] generateTarget() {
+        return RandomGenerator.generateTarget(this.targetBattlefield);
     }
 
     String receiveFire(int[] target) {
         if (target.length != 2) {
             throw new CoordsInvalidException();
         }
-        this.declareShot(target);
-        return this.takeDamage(target);
-    }
-
-    private void declareShot(int[] target) {
-        if (target.length < 2) {
-            throw new CoordsInvalidException("Target in Combatant.declareShot has length < 2.");
-        }
-
-        if (this.isCPU) {
-            System.out.println("Computer fired at position ("
-                    + (target[0]) + "," + (target[1]) + ")");
-        } else {
-            System.out.println("You fired at position ("
-                    + (target[0]) + "," + (target[1]) + ")");
-        }
-    }
-
-    private String takeDamage(int[] target) {
         int gridRow = 2 + target[0];
         int gridCol = 2 + target[1];
-        char targetChar = this.battlefield[gridRow][gridCol];
-        if (targetChar == ' ' || targetChar == 'o') {
-            this.battlefield[gridRow][gridCol] = 'o';
-            return "Miss.";
-        } else {
+
+        Optional<Ship> opTargetShip = Optional.ofNullable(this.findShip(gridRow, gridCol));
+
+        if (opTargetShip.isPresent()) {
+            opTargetShip.ifPresent(ship -> {
+                boolean shipSunk = ship.incrementHitCount();
+                if (shipSunk) {
+                    UserInterface.announceShipSunk(this, ship);
+                }
+            });
             this.battlefield[gridRow][gridCol] = 'x';
             return "Hit!";
+        } else {
+            this.battlefield[gridRow][gridCol] = 'o';
+            return "Miss.";
         }
     }
 
@@ -145,10 +147,21 @@ public class Combatant {
         }
         int gridRow = 2 + target[0];
         int gridCol = 2 + target[1];
-        if (result.equals("hit")) {
+        if (result.equals("Hit!")) {
             this.targetBattlefield[gridRow][gridCol] = 'x';
         } else {
             this.targetBattlefield[gridRow][gridCol] = 'o';
         }
+    }
+
+    boolean checkIfDead() {
+        boolean isDead = true;
+        for (Ship ship: this.shipArray) {
+            if (!ship.isSunk()) {
+                isDead = false;
+            }
+        }
+        this.isDead = isDead;
+        return this.isDead;
     }
 }

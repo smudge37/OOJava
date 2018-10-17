@@ -1,19 +1,12 @@
 package battleships;
 
 public class GameMaster {
-    private BattleshipsUtil bu;
-    private RandomGenerator rg;
     private Combatant player1;
     private Combatant player2;
-    private UserInterface ui;
 
     public GameMaster(boolean player1IsCPU, boolean player2IsCPU) {
-        this.bu = new BattleshipsUtil();
-        this.rg = new RandomGenerator();
-        this.player1 = new Combatant(this.bu, this.rg, player1IsCPU);
-        this.player2 = new Combatant(this.bu, this.rg, player2IsCPU);
-        this.ui = new UserInterface(this.bu);
-
+        this.player1 = new Combatant("User", player1IsCPU);
+        this.player2 = new Combatant("Computer", player2IsCPU);
     }
 
     public void run(boolean bypassPlacement) {
@@ -24,17 +17,16 @@ public class GameMaster {
 
     private void placementPhase(boolean bypassPlacement) {
         if (this.player1.isCPU()) {
-            this.player1.generateRandomBattlefield(rg);
+            this.player1.generateRandomBattlefield();
         } else {
-            this.ui.shipPlacement(this.player1, bypassPlacement);
+            UserInterface.shipPlacement(this.player1, bypassPlacement);
         }
 
         if (this.player2.isCPU()) {
-            this.player2.generateRandomBattlefield(rg);
+            this.player2.generateRandomBattlefield();
         } else {
-            this.ui.shipPlacement(this.player2, bypassPlacement);
+            UserInterface.shipPlacement(this.player2, bypassPlacement);
         }
-        player2.printBattlefield();
     }
 
     private void battlePhase() {
@@ -42,35 +34,36 @@ public class GameMaster {
         String result;
 
         while (!combatantDead) {
-            this.ui.displayBattleStatus(this.player1);
+            UserInterface.displayBattleStatus(this.player1);
             result = fire(this.player1, this.player2);
             if (!this.player1.isCPU()) {
-                this.ui.returnResult(result);
+                UserInterface.printResult(result);
             }
 
-            this.ui.displayBattleStatus(this.player2);
+            UserInterface.displayBattleStatus(this.player2);
             result = fire(this.player2, this.player1);
             if (!this.player2.isCPU()) {
-                this.ui.returnResult(result);
+                UserInterface.printResult(result);
             }
 
-            combatantDead = this.player1.isDead() || this.player2.isDead();
+            combatantDead = this.player1.checkIfDead() || this.player2.checkIfDead();
         }
     }
 
     private String fire(Combatant attacker, Combatant defender) {
         int[] target;
         if (attacker.isCPU()) {
-            target = attacker.generateTarget(rg);
+            target = attacker.generateTarget();
         } else {
-            target = ui.selectTarget();
+            target = UserInterface.selectTarget();
         }
+        UserInterface.declareShot(target, attacker);
         String result = defender.receiveFire(target);
         attacker.recordAttackResult(result, target);
         return result;
     }
 
     private void endGamePhase() {
-
+        UserInterface.announceGameResult(this.player1, this.player2);
     }
 }
