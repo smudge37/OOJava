@@ -34,7 +34,7 @@ public class Combatant {
         return this.isDead;
     }
 
-    // Find ship
+    // Ship details
     private Ship findShip(int gridRow, int gridCol) {
         for (Ship ship: this.shipArray) {
             for (int[] cell: ship.getCellsFilled()) {
@@ -49,12 +49,6 @@ public class Combatant {
     // Printing
     public void printBattlefield() {
         for (char[] row : battlefield) {
-            System.out.println(new String(row));
-        }
-    }
-
-    public void printTargetBattlefield() {
-        for (char[] row : targetBattlefield) {
             System.out.println(new String(row));
         }
     }
@@ -163,5 +157,20 @@ public class Combatant {
         }
         this.isDead = isDead;
         return this.isDead;
+    }
+
+    // Stats
+    int getNumHits() {
+        return BattleshipsUtil.countHits(this.battlefield);
+    }
+
+    int getNumShipsRemaining () {
+        int numShipsRemaining = 0;
+        for (Ship ship:this.shipArray) {
+            if (!ship.isSunk()) {
+                numShipsRemaining++;
+            }
+        }
+        return  numShipsRemaining;
     }
 }

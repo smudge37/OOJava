@@ -108,7 +108,7 @@ public class UserInterface {
 
     // Battle Phase
     static void displayBattleStatus(Combatant currentAttacker) {
-        System.out.println("Current Battle Status:\n");
+        System.out.println("\nCurrent Battle Status:\n");
         currentAttacker.printBothBattlefields();
     }
     static int[] selectTarget() {
@@ -127,7 +127,7 @@ public class UserInterface {
             throw new CoordsInvalidException("Target in Combatant.declareShot has length < 2.");
         }
 
-        System.out.println(combatant.getName() + " fired at position ("
+        System.out.println("\n" + combatant.getName() + " fired at position ("
                 + (target[0]) + "," + (target[1]) + ")");
     }
     static void printResult(String result) {
@@ -138,7 +138,12 @@ public class UserInterface {
     }
 
     // End Game
-    static void announceGameResult(Combatant player1, Combatant player2) {
+    static void announceGameResult(Combatant player1, Combatant player2, int roundCount) {
+        // Stats: Accuracy, no. ships sunk
+
+        System.out.println("\n\n\nGame over after " + roundCount + " rounds!");
+        printPlayerStats(player1);
+        printPlayerStats(player2);
         if (player1.isDead()) {
             if (player2.isDead()) {
                 System.out.println("It's a draw!");
@@ -148,5 +153,13 @@ public class UserInterface {
         } else {
             System.out.println(player1.getName() + " wins!");
         }
+    }
+
+    static void printPlayerStats(Combatant player) {
+        System.out.println(player.getName() + "'s battlefield:");
+        player.printBattlefield();
+        System.out.println(player.getNumShipsRemaining() + " ships remaining.");
+        System.out.println(player.getNumHits() + " hits taken.");
+        // Accuracy?
     }
 }

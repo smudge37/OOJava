@@ -11,8 +11,8 @@ public class GameMaster {
 
     public void run(boolean bypassPlacement) {
         this.placementPhase(bypassPlacement);
-        this.battlePhase();
-        this.endGamePhase();
+        int roundCount = this.battlePhase();
+        this.endGamePhase(roundCount);
     }
 
     private void placementPhase(boolean bypassPlacement) {
@@ -29,25 +29,29 @@ public class GameMaster {
         }
     }
 
-    private void battlePhase() {
+    private int battlePhase() {
         boolean combatantDead = false;
         String result;
+        int roundCount = 0;
 
         while (!combatantDead) {
-            UserInterface.displayBattleStatus(this.player1);
-            result = fire(this.player1, this.player2);
+            roundCount++;
             if (!this.player1.isCPU()) {
-                UserInterface.printResult(result);
+                UserInterface.displayBattleStatus(this.player1);
             }
+            result = fire(this.player1, this.player2);
+            UserInterface.printResult(result);
 
-            UserInterface.displayBattleStatus(this.player2);
-            result = fire(this.player2, this.player1);
             if (!this.player2.isCPU()) {
-                UserInterface.printResult(result);
+                UserInterface.displayBattleStatus(this.player2);
             }
+            result = fire(this.player2, this.player1);
+            UserInterface.printResult(result);
 
             combatantDead = this.player1.checkIfDead() || this.player2.checkIfDead();
         }
+
+        return roundCount;
     }
 
     private String fire(Combatant attacker, Combatant defender) {
@@ -63,7 +67,7 @@ public class GameMaster {
         return result;
     }
 
-    private void endGamePhase() {
-        UserInterface.announceGameResult(this.player1, this.player2);
+    private void endGamePhase(int roundCount) {
+        UserInterface.announceGameResult(this.player1, this.player2, roundCount);
     }
 }

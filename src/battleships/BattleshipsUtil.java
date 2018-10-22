@@ -2,10 +2,10 @@ package battleships;
 
 import java.util.Arrays;
 
-public class BattleshipsUtil {
+class BattleshipsUtil {
 
     // Creation
-    public static char[][] createBattlefield() {
+    static char[][] createBattlefield() {
         char[][] battlefield = new char[14][14];
         for (int i = 0; i < 14; i++) {
             if (i < 2 || i >= 12) {
@@ -33,7 +33,7 @@ public class BattleshipsUtil {
     }
 
     // Ship Placement
-    public static char[][] addShip(char[][] battlefield, Ship ship) {
+    static char[][] addShip(char[][] battlefield, Ship ship) {
         int[][] cells = ship.getCellsFilled();
 //        System.out.println("Writing new ship to Battlefield: " + battlefield);
 //        System.out.println("Ship has coordinates: " + Arrays.toString(ship.getCoordinates()));
@@ -55,7 +55,7 @@ public class BattleshipsUtil {
         return battlefield;
     }
 
-    public static boolean isCollision(char[][] battlefield, Ship ship) {
+    static boolean isCollision(char[][] battlefield, Ship ship) {
         int[][] cellsFilled = ship.getCellsFilled();
         for (int[] cell: cellsFilled) {
             if (battlefield[cell[0]][cell[1]] != ' ') {
@@ -67,7 +67,19 @@ public class BattleshipsUtil {
 
     // CountHits
 
-    public static int countHits(char[][] battlefield) {
+    static int countShots(char[][] battlefield) {
+        int count = 0;
+        for (char[] row: battlefield) {
+            for (char entry: row) {
+                if (entry == 'x' || entry == 'o') {
+                    count++;
+                }
+            }
+        }
+        return count;
+    }
+
+    static int countHits(char[][] battlefield) {
         int count = 0;
         for (char[] row: battlefield) {
             for (char entry: row) {

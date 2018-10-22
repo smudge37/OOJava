@@ -3,24 +3,25 @@ package battleships;
 public class RandomGenerator {
 
     static int[] generateTarget(char[][] targetBattlefield) {
-        int targetsLeft = 100 - BattleshipsUtil.countHits(targetBattlefield);
+        int targetsLeft = 100 - BattleshipsUtil.countShots(targetBattlefield);
         int[] target = new int[2];
 
         int countdown =  Double.valueOf(Math.floor(targetsLeft * Math.random())).intValue();
-        for (int i = 0; i <= 9; i++) {
-            for (int j = 0; j <= 9; j++) {
-                if (targetBattlefield[i + 2][j + 2] == ' ') {
-                    if (countdown == 0) {
-                        target[0] = i;
-                        target[1] = j;
-                        return target;
-                    } else {
-                        countdown = countdown - 1;
+        while (true) {
+            for (int i = 0; i <= 9; i++) {
+                for (int j = 0; j <= 9; j++) {
+                    if (targetBattlefield[i + 2][j + 2] == ' ') {
+                        if (countdown == 0) {
+                            target[0] = i;
+                            target[1] = j;
+                            return target;
+                        } else {
+                            countdown = countdown - 1;
+                        }
                     }
                 }
             }
         }
-        return target;
     }
 
     static Ship generateShip(int shipNumber) {
